@@ -2,7 +2,7 @@
 
 A Gradle plugin that validates AsciiDoc documentation laid out the Antora way and renders it to PDF as part of a Gradle build. It runs [`adocfoundry-cli`](https://github.com/bovinemagnet/AdocFoundry), a single native binary that needs no Node.js, JVM or Ruby at run time.
 
-> **Status:** in development. Checking, auditing and PDF export work; nothing is published yet. The implementation specification is [docs/IMPLEMENTATION-SPEC.md](docs/IMPLEMENTATION-SPEC.md), and the discussion behind it is [AdocFoundry#805](https://github.com/bovinemagnet/AdocFoundry/issues/805).
+> **Status:** in development. Checking, auditing and PDF export work, and a release publishes to the Gradle Plugin Portal; no release has been made yet. The implementation specification is [docs/IMPLEMENTATION-SPEC.md](docs/IMPLEMENTATION-SPEC.md), and the discussion behind it is [AdocFoundry#805](https://github.com/bovinemagnet/AdocFoundry/issues/805).
 
 ## What it will do
 
@@ -14,13 +14,32 @@ PDFs look exactly as AdocFoundry exports them: the plugin opens the same workspa
 
 It does not build the Antora HTML site; keep the `org.antora` plugin for that, beside this one. It works on local content only and never clones a playbook's remote sources.
 
-## Checking the documentation
+## Installing
+
+Once released, apply the plugin from the Gradle Plugin Portal:
 
 ```groovy
 plugins {
-    id 'io.github.bovinemagnet.adocfoundry' version '0.0.0'
+    id 'io.github.bovinemagnet.adocfoundry' version '<version>'
 }
+```
 
+To try a build of this repository first, run `./gradlew publishToMavenLocal` here, and in the other build's `settings.gradle` add:
+
+```groovy
+pluginManagement {
+    repositories {
+        mavenLocal()
+        gradlePluginPortal()
+    }
+}
+```
+
+Then apply it with `version '0.0.0'`. The plugin needs Gradle 8.14 or later, and adds no dependencies to the build beyond itself.
+
+## Checking the documentation
+
+```groovy
 adocfoundry {
     check {
         failOn = 'warning'    // default 'error'

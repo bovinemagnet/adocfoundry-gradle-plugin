@@ -1,9 +1,11 @@
 plugins {
     id 'java-gradle-plugin'
+    id 'com.gradle.plugin-publish' version '2.2.1'
 }
 
 group = 'io.github.bovinemagnet'
-version = '0.0.0'
+// A release sets this from its tag (release.yml); otherwise 0.0.0.
+version = providers.gradleProperty('releaseVersion').getOrElse('0.0.0')
 
 // The plugin is compiled for Java 17, the lowest Java that Gradle 9 runs on. The build and its
 // tests run on 21, which both the minimum supported Gradle (8.14) and the current one accept.
@@ -17,6 +19,12 @@ tasks.withType(JavaCompile).configureEach {
     options.release = 17
     options.encoding = 'UTF-8'
     options.compilerArgs += ['-Xlint:all', '-Werror']
+}
+
+// Doclint still checks the HTML and tags; it does not ask for a comment on every default
+// constructor and documented getter.
+tasks.named('javadoc', Javadoc) {
+    options.addBooleanOption('Xdoclint:all,-missing', true)
 }
 
 repositories {
@@ -49,6 +57,9 @@ testing {
                     // downloaded once. It is never the developer's own Gradle user home.
                     systemProperty 'adocfoundry.testKitDir', layout.projectDirectory.dir('.gradle/testkit').asFile.absolutePath
                     environment 'ADOCFOUNDRY_CLI', providers.environmentVariable('ADOCFOUNDRY_CLI').orElse('').get()
+                    // The plugin as it would be published, for pluginMarkerIsPublishedLocally.
+                    dependsOn 'publishAllPublicationsToFunctionalTestRepository'
+                    systemProperty 'adocfoundry.publishedRepository', layout.buildDirectory.dir('functional-test-repo').get().asFile.absolutePath
                     // Tests that run the real CLI download it unless ADOCFOUNDRY_CLI is set;
                     // -PskipNetworkTests leaves them out.
                     if (providers.gradleProperty('skipNetworkTests').isPresent()) {
@@ -61,6 +72,8 @@ testing {
 }
 
 gradlePlugin {
+    website = 'https://github.com/bovinemagnet/adocfoundry-gradle-plugin'
+    vcsUrl = 'https://github.com/bovinemagnet/adocfoundry-gradle-plugin.git'
     testSourceSets(sourceSets.functionalTest)
     plugins {
         adocfoundry {
@@ -69,6 +82,31 @@ gradlePlugin {
             displayName = 'AdocFoundry'
             description = 'Validates Antora documentation and renders PDFs with adocfoundry-cli.'
             tags.addAll('asciidoc', 'antora', 'documentation', 'pdf')
+        }
+    }
+}
+
+publishing {
+    repositories {
+        // A throwaway repository the functional tests apply the published plugin from.
+        maven {
+            name = 'functionalTest'
+            url = layout.buildDirectory.dir('functional-test-repo')
+        }
+    }
+    publications.withType(MavenPublication).configureEach {
+        pom {
+            developers {
+                developer {
+                    name = 'Paul Snow'
+                }
+            }
+            licenses {
+                license {
+                    name = 'Apache-2.0'
+                    url = 'https://www.apache.org/licenses/LICENSE-2.0'
+                }
+            }
         }
     }
 }
