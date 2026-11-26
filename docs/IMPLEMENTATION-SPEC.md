@@ -328,6 +328,7 @@ After the first release, in any order:
 - Word, EPUB, Kindle and DocBook containers in the pattern of `pdfs`. EPUB sets `SOURCE_DATE_EPOCH` from the commit time, or `0` when there is no Git.
 - Adopt AdocFoundry#812 when released: log the CLI's `theme:` line at lifecycle level, and use its note in place of the plugin's own user-settings check.
 - Adopt AdocFoundry#807 (versioned `check` JSON), #808 (`--format json` from exports, to declare and verify outputs), #809 (`timeout` in the extension) and #810 (`--cache-dir` into `build/`, then drop the `.cache/**` exclusion) as each is released. Raise `MINIMUM_TOOL_VERSION` only when a feature needs it.
+- Once AdocFoundry#817 is fixed, set the `themed` fixture's `[pdf.profiles.guide]` back to `component = "demo"`, so the profile is tested with a coordinate without a version.
 - The standalone Windows asset once AdocFoundry#806 ships: pick it by `toolVersion`, falling back to the application zip for older versions.
 - Problems API reporting, once it is stable on the minimum Gradle version.
 - `@CacheableTask`, after a test shows byte-identical PDFs from two machines and documents the inputs that matter.
@@ -347,4 +348,4 @@ Record here, in the pull request that makes it, any departure from this specific
 - **PDF arguments** (WP 5). A component entry passes the root both as the positional argument and as `--root`, with `--component`; `--fail-on` is always passed, as its default `none` is the CLI's. With 0.15.0 these give the same bytes as `pdf <component-dir>` run in the workspace, which `pdfMatchesAdocFoundry` checks.
 - **A `theme` file is always an input** (WP 5), wherever it lies. One inside the workspace is then declared twice, which is harmless. A `fontsDir` is an `@InputDirectory` likewise. The PDF is deleted before the export, so a failed export leaves none behind.
 - **The user settings warning is logged by each PDF task that runs** (WP 5), not once per build, and reads the file only when the task executes.
-- **Profile coordinates need a version with 0.15.0** (WP 5). A profile with `component = "demo"` fails with "no Antora component `demo` in the workspace", though `--component demo` and a profile with `component = "latest@demo"` work. The `themed` fixture therefore uses `latest@demo`. This should be reported to AdocFoundry.
+- **Profile coordinates need a version with 0.15.0** (WP 5). A profile with `component = "demo"` fails with "no Antora component `demo` in the workspace", though `--component demo` and a profile with `component = "latest@demo"` work. The `themed` fixture therefore uses `latest@demo`. Reported as AdocFoundry#817.

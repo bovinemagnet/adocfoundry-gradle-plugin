@@ -67,6 +67,6 @@ Functional tests that download the real CLI need the network. Set `ADOCFOUNDRY_C
 
 - One work package per pull request, in the order of §11, titled `WP <n>: <name>`. Each leaves `./gradlew build` green.
 - The pull request description lists the spec section, the tests added and the commands run.
-- When the CLI lacks something the plugin needs, open an issue in `bovinemagnet/AdocFoundry` and reference it from §11, rather than working around it silently. Related issues already open: AdocFoundry#806–#812.
+- When the CLI lacks something the plugin needs, open an issue in `bovinemagnet/AdocFoundry` and reference it from §11, rather than working around it silently. Related issues already open: AdocFoundry#806–#812 and #817.
 - Update `README.md` when usage or visible behaviour changes.
 - Commit messages are short and imperative (`Add the tool provisioning service`).
