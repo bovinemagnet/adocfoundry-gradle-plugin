@@ -35,13 +35,12 @@ jobs:
           distribution: temurin
           java-version: '21'
       - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
-      # The functional tests' TestKit home: the Gradle versions they run on and the CLI they
-      # download, so neither is fetched again on every run.
+      # The CLI the functional tests download into their TestKit home, so it is not fetched
+      # again on every run. The Gradle versions they run on are in the Gradle user home, which
+      # setup-gradle caches.
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          path: |
-            .gradle/testkit/wrapper/dists
-            .gradle/testkit/caches/adocfoundry
+          path: .gradle/testkit/caches/adocfoundry
           key: testkit-${{ runner.os }}-${{ hashFiles('build.gradle', 'src/main/java/io/github/bovinemagnet/adocfoundry/AdocFoundryPlugin.java') }}
           restore-keys: testkit-${{ runner.os }}-
       - name: Build

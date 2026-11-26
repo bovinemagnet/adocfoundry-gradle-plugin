@@ -25,7 +25,7 @@ Decisions already made are in §3; do not reopen them without asking. Departures
 ./gradlew functionalTest -PfunctionalTestGradleVersions=9.9.2   # one Gradle version only
 ./gradlew build -PskipNetworkTests  # leave out tests tagged `network`, which run the real CLI
 ./gradlew publishToMavenLocal     # try the plugin from another build
-gradle wrapper --gradle-version 9.3.1      # WP 1: no wrapper yet, so use a Gradle on PATH
+./gradlew wrapper --gradle-version 9.3.1   # change the wrapper version
 ```
 
 Functional tests that download the real CLI need the network. Set `ADOCFOUNDRY_CLI=/path/to/adocfoundry-cli` to run them with a local binary instead.
