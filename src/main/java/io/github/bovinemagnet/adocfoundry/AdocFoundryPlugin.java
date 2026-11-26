@@ -1,6 +1,7 @@
 package io.github.bovinemagnet.adocfoundry;
 
 import io.github.bovinemagnet.adocfoundry.tasks.AdocFoundryTask;
+import io.github.bovinemagnet.adocfoundry.tasks.AuditTask;
 import io.github.bovinemagnet.adocfoundry.tasks.CheckTask;
 import io.github.bovinemagnet.adocfoundry.tasks.DocsTreeExclusions;
 import io.github.bovinemagnet.adocfoundry.tool.AdocFoundryToolService;
@@ -52,6 +53,15 @@ public abstract class AdocFoundryPlugin implements Plugin<Project> {
             task.getReportFile().convention(project.getLayout().getBuildDirectory().file("reports/adocfoundry/check.json"));
         });
         project.getTasks().named(LifecycleBasePlugin.CHECK_TASK_NAME).configure(task -> task.dependsOn(check));
+
+        project.getTasks().register("adocfoundryAudit", AuditTask.class, task -> {
+            task.setDescription("Audits the documentation's quality with adocfoundry-cli audit, writing JSON and SARIF.");
+            task.getComponent().convention(extension.getAudit().getComponent());
+            task.getFailOn().convention(extension.getAudit().getFailOn());
+            task.getRequireComplete().convention(extension.getAudit().getRequireComplete());
+            task.getJsonReport().convention(project.getLayout().getBuildDirectory().file("reports/adocfoundry/audit.json"));
+            task.getSarifReport().convention(project.getLayout().getBuildDirectory().file("reports/adocfoundry/audit.sarif"));
+        });
     }
 
     private static void configure(Project project, AdocFoundryExtension extension, AdocFoundryTask task) {

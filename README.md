@@ -2,7 +2,7 @@
 
 A Gradle plugin that validates AsciiDoc documentation laid out the Antora way and renders it to PDF as part of a Gradle build. It runs [`adocfoundry-cli`](https://github.com/bovinemagnet/AdocFoundry), a single native binary that needs no Node.js, JVM or Ruby at run time.
 
-> **Status:** in development. `adocfoundryCheck` works; the audit and PDF export are still to come, and nothing is published yet. The implementation specification is [docs/IMPLEMENTATION-SPEC.md](docs/IMPLEMENTATION-SPEC.md), and the discussion behind it is [AdocFoundry#805](https://github.com/bovinemagnet/AdocFoundry/issues/805).
+> **Status:** in development. `adocfoundryCheck` and `adocfoundryAudit` work; PDF export is still to come, and nothing is published yet. The implementation specification is [docs/IMPLEMENTATION-SPEC.md](docs/IMPLEMENTATION-SPEC.md), and the discussion behind it is [AdocFoundry#805](https://github.com/bovinemagnet/AdocFoundry/issues/805).
 
 ## What it will do
 
@@ -35,6 +35,20 @@ adocfoundry {
 - **`toolVersion`** chooses the CLI release (default 0.15.0, the oldest supported). **`executable`** runs a local `adocfoundry-cli` instead, and **`baseUrl`** points at a mirror of the releases. An `--offline` build uses the cache or `executable`.
 - **Up to date.** The task reruns only when the workspace's files change. It leaves out the folders AdocFoundry leaves out by default: `.cache`, `.git`, `.zed`, `node_modules`, `build`, `target`, `dist`, `.idea` and `.gradle`, except `build`, `target` and `dist` inside a component's `modules` folder. A workspace's own `[workspace] ignore` list is not read, so a change in a folder it lists still reruns the task.
 - **Linux** binaries need glibc 2.35 or later (Ubuntu 22.04+, Debian 12+). On RHEL 8 or 9, Amazon Linux 2 or Alpine, set `executable` to a binary built for the system.
+
+## Auditing the documentation
+
+```groovy
+adocfoundry {
+    audit {
+        component = '2.0@manual'   // optional; the whole workspace otherwise
+        failOn = 'warning'         // optional: 'none', 'warning' or 'error'
+        requireComplete = true     // optional
+    }
+}
+```
+
+`gradle adocfoundryAudit` runs `adocfoundry-cli audit` and writes `build/reports/adocfoundry/audit.json` and `audit.sarif` (SARIF 2.1.0, for code scanning). It is not part of `check`. Options left unset are not passed, so the `[quality]` table of the workspace's `.adocfoundry.toml` decides; `requireComplete = false` cannot turn off a `require_complete` set there. Both reports are written even when the audit fails.
 
 ## Planned use
 
