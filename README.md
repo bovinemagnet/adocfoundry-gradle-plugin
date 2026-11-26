@@ -2,7 +2,7 @@
 
 A Gradle plugin that validates AsciiDoc documentation laid out the Antora way and renders it to PDF as part of a Gradle build. It runs [`adocfoundry-cli`](https://github.com/bovinemagnet/AdocFoundry), a single native binary that needs no Node.js, JVM or Ruby at run time.
 
-> **Status:** planned. Nothing here is usable yet. The implementation specification is [docs/IMPLEMENTATION-SPEC.md](docs/IMPLEMENTATION-SPEC.md), and the discussion behind it is [AdocFoundry#805](https://github.com/bovinemagnet/AdocFoundry/issues/805).
+> **Status:** in development. The plugin applies and has its extension, but runs nothing yet. The implementation specification is [docs/IMPLEMENTATION-SPEC.md](docs/IMPLEMENTATION-SPEC.md), and the discussion behind it is [AdocFoundry#805](https://github.com/bovinemagnet/AdocFoundry/issues/805).
 
 ## What it will do
 
@@ -43,7 +43,7 @@ adocfoundry {
 - The CLI is downloaded from AdocFoundry's GitHub releases and verified against `SHA256SUMS`. A local executable or a mirror can be used instead.
 - The first release covers `check`, `audit` and `pdf`.
 - Each plugin release pins a tested default CLI version, which a build may override.
-- The plugin supports the oldest Gradle release still maintained when it ships, and is tested up to the current one.
+- The plugin supports the oldest Gradle release still maintained when it ships, and is tested up to the current one: today Gradle 8.14 to 9.9. It needs Java 17 or later to run Gradle.
 
 ## Depends on
 

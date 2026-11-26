@@ -5,3 +5,7 @@ build/
 *.iml
 .kotlin/
 local.properties
+.classpath
+.project
+.settings/
+bin/

@@ -336,4 +336,5 @@ After the first release, in any order:
 
 Record here, in the pull request that makes it, any departure from this specification and why.
 
-- (none yet)
+- **Minimum Gradle version: 8.14** (WP 1). Gradle's end-of-life policy backports critical and security fixes to the last minor of the previous major only, and Gradle 9 is the current major (9.9.2 in November 2026), so 8.14 is the oldest release still maintained. Functional tests run on 8.14.8 and on 9.9.2, the current release; the wrapper stays at 9.3.1. `-PfunctionalTestGradleVersions=<list>` narrows a local run.
+- **The build runs on a Java 21 toolchain** (WP 1), still compiling with `--release 17`. Gradle 8.14 does not run on Java 25, and TestKit starts each Gradle version on the test's own JVM. `settings.gradle` applies the Foojay toolchain resolver, so a machine without Java 21 downloads one.

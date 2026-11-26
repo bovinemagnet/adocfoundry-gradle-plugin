@@ -13,7 +13,7 @@ A Gradle plugin, `io.github.bovinemagnet.adocfoundry`, that runs `adocfoundry-cl
 
 Decisions already made are in §3; do not reopen them without asking. Departures go in §12, in the pull request that makes them.
 
-**Current state:** nothing is implemented. Begin with WP 1.
+**Current state:** WP 1 (skeleton) is done. Next is WP 2.
 
 ## Commands
 
