@@ -23,7 +23,7 @@ Decisions already made are in §3; do not reopen them without asking. Departures
 ./gradlew functionalTest          # TestKit tests (from WP 1)
 ./gradlew functionalTest --tests '*CheckTaskTest*'
 ./gradlew publishToMavenLocal     # try the plugin from another build
-./gradlew wrapper --gradle-version 9.3.1   # WP 1 creates the wrapper
+gradle wrapper --gradle-version 9.3.1      # WP 1: no wrapper yet, so use a Gradle on PATH
 ```
 
 Functional tests that download the real CLI need the network. Set `ADOCFOUNDRY_CLI=/path/to/adocfoundry-cli` to run them with a local binary instead.
