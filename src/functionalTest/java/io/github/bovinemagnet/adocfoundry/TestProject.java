@@ -69,6 +69,17 @@ final class TestProject {
     }
 
     /**
+     * Where AdocFoundry's user settings file is for this test's builds: beneath
+     * {@code XDG_CONFIG_HOME} or {@code APPDATA}, or on macOS beneath {@code HOME}.
+     */
+    Path userSettingsFile() {
+        Path configDir = Platform.current().os() == Platform.Os.MACOS
+                ? userConfigDir.resolve("home").resolve("Library").resolve("Application Support")
+                : userConfigDir;
+        return configDir.resolve("adocfoundry").resolve("adocfoundry.toml");
+    }
+
+    /**
      * Writes {@code settings.gradle} and a {@code build.gradle} applying the plugin, then
      * {@code body}. When {@code ADOCFOUNDRY_CLI} is set, the build runs that binary instead of
      * downloading one.
