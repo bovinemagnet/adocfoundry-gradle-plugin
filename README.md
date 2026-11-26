@@ -2,13 +2,15 @@
 
 A Gradle plugin that validates AsciiDoc documentation laid out the Antora way and renders it to PDF as part of a Gradle build. It runs [`adocfoundry-cli`](https://github.com/bovinemagnet/AdocFoundry), a single native binary that needs no Node.js, JVM or Ruby at run time.
 
-> **Status:** planned. Nothing here is usable yet. The design and the decisions behind it are in [AdocFoundry#805](https://github.com/bovinemagnet/AdocFoundry/issues/805).
+> **Status:** planned. Nothing here is usable yet. The implementation specification is [docs/IMPLEMENTATION-SPEC.md](docs/IMPLEMENTATION-SPEC.md), and the discussion behind it is [AdocFoundry#805](https://github.com/bovinemagnet/AdocFoundry/issues/805).
 
 ## What it will do
 
 - **Validate** a documentation tree with `adocfoundry-cli check` and `audit`, failing the build on broken references and other problems. Audit reports are written as JSON and SARIF.
 - **Render PDFs** of Antora components, or of the PDF profiles a workspace's `.adocfoundry.toml` defines.
 - **Later**, export Word, EPUB, Kindle and DocBook the same way.
+
+PDFs look exactly as AdocFoundry exports them: the plugin opens the same workspace and leaves the theme, fonts and attributes to the workspace's `.adocfoundry.toml`, `antora.yml` and playbook. Keep the look in the repository, not only in your AdocFoundry user settings, which the build does not read.
 
 It does not build the Antora HTML site; keep the `org.antora` plugin for that, beside this one. It works on local content only and never clones a playbook's remote sources.
 
@@ -21,7 +23,6 @@ plugins {
 
 adocfoundry {
     toolVersion = '0.15.0'
-    docsDir = file('src/docs')
 
     check {
         failOn = 'warning'
@@ -54,6 +55,7 @@ These changes to AdocFoundry's CLI and releases make the plugin's contract firm:
 - [#809](https://github.com/bovinemagnet/AdocFoundry/issues/809): a `--timeout` option.
 - [#810](https://github.com/bovinemagnet/AdocFoundry/issues/810): a `--cache-dir` option for the diagram cache.
 - [#811](https://github.com/bovinemagnet/AdocFoundry/issues/811): Linux builds for older glibc and musl.
+- [#812](https://github.com/bovinemagnet/AdocFoundry/issues/812): name the PDF theme used, and note when user settings would choose another.
 
 ## Licence
 
