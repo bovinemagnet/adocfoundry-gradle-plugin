@@ -2,7 +2,7 @@
 
 A Gradle plugin that validates AsciiDoc documentation laid out the Antora way and renders it to PDF as part of a Gradle build. It runs [`adocfoundry-cli`](https://github.com/bovinemagnet/AdocFoundry), a single native binary that needs no Node.js, JVM or Ruby at run time.
 
-> **Status:** in development. The plugin applies and has its extension, but runs nothing yet. The implementation specification is [docs/IMPLEMENTATION-SPEC.md](docs/IMPLEMENTATION-SPEC.md), and the discussion behind it is [AdocFoundry#805](https://github.com/bovinemagnet/AdocFoundry/issues/805).
+> **Status:** in development. `adocfoundryCheck` works; the audit and PDF export are still to come, and nothing is published yet. The implementation specification is [docs/IMPLEMENTATION-SPEC.md](docs/IMPLEMENTATION-SPEC.md), and the discussion behind it is [AdocFoundry#805](https://github.com/bovinemagnet/AdocFoundry/issues/805).
 
 ## What it will do
 
@@ -13,6 +13,28 @@ A Gradle plugin that validates AsciiDoc documentation laid out the Antora way an
 PDFs look exactly as AdocFoundry exports them: the plugin opens the same workspace and leaves the theme, fonts and attributes to the workspace's `.adocfoundry.toml`, `antora.yml` and playbook. Keep the look in the repository, not only in your AdocFoundry user settings, which the build does not read.
 
 It does not build the Antora HTML site; keep the `org.antora` plugin for that, beside this one. It works on local content only and never clones a playbook's remote sources.
+
+## Checking the documentation
+
+```groovy
+plugins {
+    id 'io.github.bovinemagnet.adocfoundry' version '0.0.0'
+}
+
+adocfoundry {
+    check {
+        failOn = 'warning'    // default 'error'
+    }
+}
+```
+
+`gradle check` runs `adocfoundryCheck`. It downloads `adocfoundry-cli` for the platform from AdocFoundry's releases, verifies it against the release's `SHA256SUMS`, caches it in the Gradle user home, and runs `adocfoundry-cli check` over the workspace. The report is saved as `build/reports/adocfoundry/check.json`, even when the check fails.
+
+- **The workspace** is the project directory, the folder a writer opens in AdocFoundry. Set `workspaceDir` to change it.
+- **`check.failOn`** is `error` or `warning`. An unresolved xref is a warning: it is logged under the default, and fails the build under `warning`.
+- **`toolVersion`** chooses the CLI release (default 0.15.0, the oldest supported). **`executable`** runs a local `adocfoundry-cli` instead, and **`baseUrl`** points at a mirror of the releases. An `--offline` build uses the cache or `executable`.
+- **Up to date.** The task reruns only when the workspace's files change. It leaves out the folders AdocFoundry leaves out by default: `.cache`, `.git`, `.zed`, `node_modules`, `build`, `target`, `dist`, `.idea` and `.gradle`, except `build`, `target` and `dist` inside a component's `modules` folder. A workspace's own `[workspace] ignore` list is not read, so a change in a folder it lists still reruns the task.
+- **Linux** binaries need glibc 2.35 or later (Ubuntu 22.04+, Debian 12+). On RHEL 8 or 9, Amazon Linux 2 or Alpine, set `executable` to a binary built for the system.
 
 ## Planned use
 

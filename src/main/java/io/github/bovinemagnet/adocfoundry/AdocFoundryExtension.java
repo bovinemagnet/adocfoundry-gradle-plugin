@@ -1,8 +1,10 @@
 package io.github.bovinemagnet.adocfoundry;
 
+import org.gradle.api.Action;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Nested;
 
 /**
  * The {@code adocfoundry} extension: which {@code adocfoundry-cli} to run, and over which
@@ -51,4 +53,21 @@ public abstract class AdocFoundryExtension {
      * @return whether to warn
      */
     public abstract Property<Boolean> getWarnAboutUserSettings();
+
+    /**
+     * Settings for {@code adocfoundryCheck}.
+     *
+     * @return the check settings
+     */
+    @Nested
+    public abstract CheckSpec getCheck();
+
+    /**
+     * Configures {@code adocfoundryCheck}.
+     *
+     * @param action the configuration
+     */
+    public void check(Action<? super CheckSpec> action) {
+        action.execute(getCheck());
+    }
 }

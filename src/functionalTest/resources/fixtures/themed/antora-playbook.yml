@@ -1,0 +1,9 @@
+site:
+  title: Demo
+content:
+  sources:
+    - url: .
+      start_path: demo
+asciidoc:
+  attributes:
+    product-name: Acme Widget

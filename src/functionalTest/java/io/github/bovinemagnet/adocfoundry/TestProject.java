@@ -10,6 +10,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -66,11 +67,42 @@ final class TestProject {
         return userConfigDir;
     }
 
-    /** Writes {@code settings.gradle} and a {@code build.gradle} applying the plugin, then {@code body}. */
+    /**
+     * Writes {@code settings.gradle} and a {@code build.gradle} applying the plugin, then
+     * {@code body}. When {@code ADOCFOUNDRY_CLI} is set, the build runs that binary instead of
+     * downloading one.
+     */
     TestProject buildFile(String body) {
+        String cli = System.getenv("ADOCFOUNDRY_CLI");
+        String executable = cli == null || cli.isEmpty()
+                ? ""
+                : "adocfoundry.executable = file('" + groovyString(cli) + "')\n\n";
         write("settings.gradle", "rootProject.name = 'fixture'\n");
-        write("build.gradle", "plugins {\n    id 'io.github.bovinemagnet.adocfoundry'\n}\n\n" + body);
+        write("build.gradle", "plugins {\n    id 'io.github.bovinemagnet.adocfoundry'\n}\n\n" + executable + body);
         return this;
+    }
+
+    /** Copies a folder of {@code fixtures/} into the project directory. */
+    TestProject fixture(String name) {
+        Path source = resource("fixtures/" + name);
+        try (Stream<Path> paths = Files.walk(source)) {
+            for (Path path : (Iterable<Path>) paths::iterator) {
+                Path target = projectDir.resolve(source.relativize(path).toString());
+                if (Files.isDirectory(path)) {
+                    Files.createDirectories(target);
+                } else {
+                    Files.copy(path, target, StandardCopyOption.REPLACE_EXISTING);
+                }
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        return this;
+    }
+
+    /** A path or other text quoted for a single-quoted Groovy string. */
+    static String groovyString(String text) {
+        return text.replace("\\", "\\\\").replace("'", "\\'");
     }
 
     TestProject write(String relativePath, String content) {
