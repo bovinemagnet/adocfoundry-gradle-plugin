@@ -1,0 +1,73 @@
+plugins {
+    id 'java-gradle-plugin'
+}
+
+group = 'io.github.bovinemagnet'
+version = '0.0.0'
+
+// The plugin is compiled for Java 17, the lowest Java that Gradle 9 runs on. The build and its
+// tests run on 21, which both the minimum supported Gradle (8.14) and the current one accept.
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 17
+    options.encoding = 'UTF-8'
+    options.compilerArgs += ['-Xlint:all', '-Werror']
+}
+
+repositories {
+    mavenCentral()
+}
+
+// The Gradle versions the functional tests run on: the oldest Gradle still maintained and the
+// current release (docs/IMPLEMENTATION-SPEC.md §10, §12). `-PfunctionalTestGradleVersions=9.3.1`
+// narrows a local run.
+def functionalTestGradleVersions = providers.gradleProperty('functionalTestGradleVersions')
+        .orElse('8.14.8,9.9.2')
+
+testing {
+    suites {
+        configureEach {
+            useJUnitJupiter('6.1.3')
+            dependencies {
+                implementation 'org.assertj:assertj-core:3.27.7'
+            }
+        }
+        functionalTest(JvmTestSuite) {
+            dependencies {
+                implementation project()
+            }
+            targets.configureEach {
+                testTask.configure {
+                    shouldRunAfter(test)
+                    systemProperty 'adocfoundry.gradleVersions', functionalTestGradleVersions.get()
+                    // One TestKit home for every run, so Gradle distributions and the CLI are
+                    // downloaded once. It is never the developer's own Gradle user home.
+                    systemProperty 'adocfoundry.testKitDir', layout.projectDirectory.dir('.gradle/testkit').asFile.absolutePath
+                    environment 'ADOCFOUNDRY_CLI', providers.environmentVariable('ADOCFOUNDRY_CLI').orElse('').get()
+                }
+            }
+        }
+    }
+}
+
+gradlePlugin {
+    testSourceSets(sourceSets.functionalTest)
+    plugins {
+        adocfoundry {
+            id = 'io.github.bovinemagnet.adocfoundry'
+            implementationClass = 'io.github.bovinemagnet.adocfoundry.AdocFoundryPlugin'
+            displayName = 'AdocFoundry'
+            description = 'Validates Antora documentation and renders PDFs with adocfoundry-cli.'
+            tags.addAll('asciidoc', 'antora', 'documentation', 'pdf')
+        }
+    }
+}
+
+tasks.named('check') {
+    dependsOn testing.suites.functionalTest
+}

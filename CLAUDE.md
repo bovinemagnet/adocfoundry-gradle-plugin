@@ -16,3 +16,13 @@ This file provides guidance when working with code in this repository. The repos
 - `./gradlew build` passes, functional tests and the configuration-cache runs included.
 - The package's acceptance tests exist with the names §11 gives.
 - `README.md` and, for any departure from the spec, §12 are updated.
+- The **Current state** line in `AGENTS.md` says which work packages have landed.
+
+## Easy to miss in the spec
+
+These cut across sections, and are planned rather than built:
+
+- The docs tree is a filtered `ConfigurableFileTree` over `workspaceDir`, never an `@InputDirectory`: the CLI writes its diagram cache to `.cache` inside the tree, which would make every task out of date (§4.2, §7).
+- For a `profile` entry, the plugin's `--output` replaces the profile's own `output`, so Gradle knows where the PDF goes; the bytes are unchanged (§6).
+- `adocfoundryAudit` runs the CLI twice, once per report format. The second run passes `--fail-on none`, so the verdict comes from the first alone (§7).
+- An unresolved xref is a warning, so `check` passes it under the default `--fail-on error`; the `broken-xref` fixture depends on this (§4.2, §10).

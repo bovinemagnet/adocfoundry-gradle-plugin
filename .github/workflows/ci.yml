@@ -1,0 +1,56 @@
+name: CI
+
+# Every pull request runs CI, whatever its base branch, so a stack of pull requests is checked
+# at each step.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  # A version tag runs CI through release.yml, which publishes only once it passes.
+  workflow_call:
+
+permissions:
+  contents: read
+
+# A newer push to a pull request cancels the run it supersedes; runs on main always finish.
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-15, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: gradle/actions/wrapper-validation@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+      # The functional tests' TestKit home: the Gradle versions they run on and the CLI they
+      # download, so neither is fetched again on every run.
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            .gradle/testkit/wrapper/dists
+            .gradle/testkit/caches/adocfoundry
+          key: testkit-${{ runner.os }}-${{ hashFiles('build.gradle', 'src/main/java/io/github/bovinemagnet/adocfoundry/AdocFoundryPlugin.java') }}
+          restore-keys: testkit-${{ runner.os }}-
+      - name: Build
+        shell: bash
+        run: ./gradlew build --console=plain
+      - name: Keep the test reports
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-reports-${{ matrix.os }}
+          path: build/reports/tests
+          retention-days: 7
