@@ -2,6 +2,7 @@ package io.github.bovinemagnet.adocfoundry;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.bovinemagnet.adocfoundry.tool.Platform;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -66,6 +67,17 @@ final class TestProject {
     /** The folder a test sees as the platform's user config directory. */
     Path userConfigDir() {
         return userConfigDir;
+    }
+
+    /**
+     * Where AdocFoundry's user settings file is for this test's builds: beneath
+     * {@code XDG_CONFIG_HOME} or {@code APPDATA}, or on macOS beneath {@code HOME}.
+     */
+    Path userSettingsFile() {
+        Path configDir = Platform.current().os() == Platform.Os.MACOS
+                ? userConfigDir.resolve("home").resolve("Library").resolve("Application Support")
+                : userConfigDir;
+        return configDir.resolve("adocfoundry").resolve("adocfoundry.toml");
     }
 
     /**
