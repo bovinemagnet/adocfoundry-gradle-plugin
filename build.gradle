@@ -49,6 +49,11 @@ testing {
                     // downloaded once. It is never the developer's own Gradle user home.
                     systemProperty 'adocfoundry.testKitDir', layout.projectDirectory.dir('.gradle/testkit').asFile.absolutePath
                     environment 'ADOCFOUNDRY_CLI', providers.environmentVariable('ADOCFOUNDRY_CLI').orElse('').get()
+                    // Tests that run the real CLI download it unless ADOCFOUNDRY_CLI is set;
+                    // -PskipNetworkTests leaves them out.
+                    if (providers.gradleProperty('skipNetworkTests').isPresent()) {
+                        options { excludeTags 'network' }
+                    }
                 }
             }
         }

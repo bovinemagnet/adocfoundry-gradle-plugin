@@ -1,0 +1,7 @@
+[pdf]
+theme = "acme"
+themes_dir = "themes"
+
+[pdf.profiles.guide]
+component = "latest@demo"
+attributes = { pdf-title = "Demo Guide", author = "Paul Snow" }

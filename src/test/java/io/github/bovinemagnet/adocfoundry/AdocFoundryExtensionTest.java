@@ -26,5 +26,6 @@ class AdocFoundryExtensionTest {
                 .isEqualTo("https://github.com/bovinemagnet/AdocFoundry/releases/download");
         assertThat(extension.getWorkspaceDir().get().getAsFile()).isEqualTo(project.getProjectDir());
         assertThat(extension.getWarnAboutUserSettings().get()).isTrue();
+        assertThat(extension.getCheck().getFailOn().get()).isEqualTo("error");
     }
 }

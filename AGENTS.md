@@ -13,7 +13,7 @@ A Gradle plugin, `io.github.bovinemagnet.adocfoundry`, that runs `adocfoundry-cl
 
 Decisions already made are in §3; do not reopen them without asking. Departures go in §12, in the pull request that makes them.
 
-**Current state:** WP 1 (skeleton) and WP 2 (tool provisioning) are done. Next is WP 3.
+**Current state:** WP 1 (skeleton), WP 2 (tool provisioning) and WP 3 (`adocfoundryCheck`) are done. Next is WP 4.
 
 ## Commands
 
@@ -22,6 +22,8 @@ Decisions already made are in §3; do not reopen them without asking. Departures
 ./gradlew test                    # unit tests
 ./gradlew functionalTest          # TestKit tests (from WP 1)
 ./gradlew functionalTest --tests '*CheckTaskTest*'
+./gradlew functionalTest -PfunctionalTestGradleVersions=9.9.2   # one Gradle version only
+./gradlew build -PskipNetworkTests  # leave out tests tagged `network`, which run the real CLI
 ./gradlew publishToMavenLocal     # try the plugin from another build
 gradle wrapper --gradle-version 9.3.1      # WP 1: no wrapper yet, so use a Gradle on PATH
 ```

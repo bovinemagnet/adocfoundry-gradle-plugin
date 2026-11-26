@@ -1,0 +1,13 @@
+extends: default
+page:
+  size: A5
+base:
+  font-color: #8B0000
+footer:
+  height: 0.75in
+  recto:
+    center:
+      content: '{product-name} | {page-number}'
+  verso:
+    center:
+      content: '{product-name} | {page-number}'
