@@ -2,6 +2,7 @@ package io.github.bovinemagnet.adocfoundry;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.bovinemagnet.adocfoundry.tool.Platform;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;

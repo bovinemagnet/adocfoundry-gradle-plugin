@@ -186,7 +186,7 @@ class PdfTaskTest {
 
         assertThat(project.run("adocfoundryPdfManual").getOutput()).doesNotContain(warning);
 
-        Path settings = project.userConfigDir().resolve("adocfoundry/adocfoundry.toml");
+        Path settings = project.userSettingsFile();
         Files.createDirectories(settings.getParent());
         Files.writeString(settings, "[ui]\nfont_size = 14\n\n[pdf]\ntheme = \"default-sans\"\n");
         Files.delete(pdf(project, "manual"));
@@ -210,6 +210,7 @@ class PdfTaskTest {
         Map<String, String> environment = builder.environment();
         environment.put("XDG_CONFIG_HOME", project.userConfigDir().toString());
         environment.put("APPDATA", project.userConfigDir().toString());
+        environment.put("HOME", project.userConfigDir().resolve("home").toString());
         Process process = builder.start();
         assertThat(process.waitFor(5, TimeUnit.MINUTES)).isTrue();
         assertThat(process.exitValue()).as(String.join(" ", command)).isZero();
