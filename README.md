@@ -2,7 +2,7 @@
 
 A Gradle plugin that validates AsciiDoc documentation laid out the Antora way and renders it to PDF as part of a Gradle build. It runs [`adocfoundry-cli`](https://github.com/bovinemagnet/AdocFoundry), a single native binary that needs no Node.js, JVM or Ruby at run time.
 
-> **Status:** in development. `adocfoundryCheck` and `adocfoundryAudit` work; PDF export is still to come, and nothing is published yet. The implementation specification is [docs/IMPLEMENTATION-SPEC.md](docs/IMPLEMENTATION-SPEC.md), and the discussion behind it is [AdocFoundry#805](https://github.com/bovinemagnet/AdocFoundry/issues/805).
+> **Status:** in development. Checking, auditing and PDF export work; nothing is published yet. The implementation specification is [docs/IMPLEMENTATION-SPEC.md](docs/IMPLEMENTATION-SPEC.md), and the discussion behind it is [AdocFoundry#805](https://github.com/bovinemagnet/AdocFoundry/issues/805).
 
 ## What it will do
 
@@ -50,29 +50,34 @@ adocfoundry {
 
 `gradle adocfoundryAudit` runs `adocfoundry-cli audit` and writes `build/reports/adocfoundry/audit.json` and `audit.sarif` (SARIF 2.1.0, for code scanning). It is not part of `check`. Options left unset are not passed, so the `[quality]` table of the workspace's `.adocfoundry.toml` decides; `requireComplete = false` cannot turn off a `require_complete` set there. Both reports are written even when the audit fails.
 
-## Planned use
+## Exporting PDFs
 
 ```groovy
-plugins {
-    id 'io.github.bovinemagnet.adocfoundry' version '0.0.0'
-}
-
 adocfoundry {
-    toolVersion = '0.15.0'
-
-    check {
-        failOn = 'warning'
-    }
     pdfs {
         manual {
-            component = '2.0@manual'
-            output = layout.buildDirectory.file('pdf/manual.pdf')
+            component = '2.0@manual'   // a component version, as a book
+        }
+        intro {
+            page = file('docs/modules/ROOT/pages/index.adoc')   // a page, as an article
+        }
+        handbook {
+            profile = 'handbook'       // [pdf.profiles.handbook] in .adocfoundry.toml
         }
     }
 }
 ```
 
-`gradle check` would then download the CLI for the platform, verify it against the release's `SHA256SUMS`, cache it, and run `adocfoundryCheck`. `gradle adocfoundryPdf` would write the PDFs. The names are illustrative until the first release.
+Each entry sets exactly one of `component`, `page` and `profile`, and gets its own task: `adocfoundryPdfManual`, `adocfoundryPdfIntro` and so on. `gradle adocfoundryPdf` runs them all. A PDF is written to `build/adocfoundry/pdf/<name>.pdf` unless the entry sets `output`; for a profile, this replaces the profile's own `output`. The task logs the CLI's `<output> (<n> pages)` line, and is up to date while the workspace and the entry are unchanged.
+
+**The look is the workspace's.** A PDF from the plugin is byte for byte the one `adocfoundry-cli pdf` writes for the same workspace, and so the one the AdocFoundry app exports. The theme, fonts and attributes come from the workspace's `.adocfoundry.toml`, the component's `antora.yml` and the playbook. Keep the look there, in the repository, and not only in your AdocFoundry user settings, which the build does not read. When the user settings file on the machine has a `[pdf]` table, each PDF task warns that it is not used; set `warnAboutUserSettings = false` to stop the warning.
+
+An entry may also set these, though normally they are left unset so that the workspace decides:
+
+- `theme`: a bundled theme, a `<name>-theme.yml` in the themes directory, or a `.yml` file relative to the project directory;
+- `fontsDir`: the theme's fonts;
+- `standards`: such as `['pdf-a-2a']`, added to the workspace's;
+- `failOn`: `none` (the default), `warning` or `error`, for export diagnostics such as a missing image. The PDF is written either way.
 
 ## Decisions
 

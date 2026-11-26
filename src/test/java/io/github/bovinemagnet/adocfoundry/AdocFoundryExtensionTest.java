@@ -30,5 +30,6 @@ class AdocFoundryExtensionTest {
         assertThat(extension.getAudit().getComponent().isPresent()).isFalse();
         assertThat(extension.getAudit().getFailOn().isPresent()).isFalse();
         assertThat(extension.getAudit().getRequireComplete().isPresent()).isFalse();
+        assertThat(extension.getPdfs()).isEmpty();
     }
 }

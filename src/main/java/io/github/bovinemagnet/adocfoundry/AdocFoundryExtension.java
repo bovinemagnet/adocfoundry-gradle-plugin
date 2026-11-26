@@ -1,6 +1,7 @@
 package io.github.bovinemagnet.adocfoundry;
 
 import org.gradle.api.Action;
+import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.Property;
@@ -86,5 +87,21 @@ public abstract class AdocFoundryExtension {
      */
     public void audit(Action<? super AuditSpec> action) {
         action.execute(getAudit());
+    }
+
+    /**
+     * The PDFs to export, each by its own {@code adocfoundryPdf<Name>} task.
+     *
+     * @return the PDF entries
+     */
+    public abstract NamedDomainObjectContainer<PdfExport> getPdfs();
+
+    /**
+     * Configures the PDFs to export.
+     *
+     * @param action the configuration
+     */
+    public void pdfs(Action<? super NamedDomainObjectContainer<PdfExport>> action) {
+        action.execute(getPdfs());
     }
 }
