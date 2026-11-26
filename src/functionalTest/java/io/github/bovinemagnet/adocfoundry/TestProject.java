@@ -35,6 +35,7 @@ final class TestProject {
     private final Path userConfigDir;
     private final String gradleVersion;
     private final Map<String, String> extraEnvironment = new HashMap<>();
+    private boolean pluginClasspath = true;
 
     /**
      * A project in a new folder beneath {@code root}, which the caller owns (a JUnit temporary
@@ -128,6 +129,12 @@ final class TestProject {
         return this;
     }
 
+    /** Resolves the plugin as a real build would, from its repositories, not TestKit's classpath. */
+    TestProject withoutPluginClasspath() {
+        pluginClasspath = false;
+        return this;
+    }
+
     TestProject environment(String name, String value) {
         extraEnvironment.put(name, value);
         return this;
@@ -138,14 +145,14 @@ final class TestProject {
         args.add("--configuration-cache");
         args.add("--warning-mode=fail");
         args.add("--stacktrace");
-        return GradleRunner.create()
+        GradleRunner runner = GradleRunner.create()
                 .withGradleVersion(gradleVersion)
                 .withTestKitDir(new File(System.getProperty("adocfoundry.testKitDir")))
                 .withProjectDir(projectDir.toFile())
-                .withPluginClasspath()
                 .withEnvironment(environment())
                 .withArguments(args)
                 .forwardOutput();
+        return pluginClasspath ? runner.withPluginClasspath() : runner;
     }
 
     BuildResult run(String... arguments) {

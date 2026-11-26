@@ -20,7 +20,7 @@ This file provides guidance when working with code in this repository. The repos
 
 ## Easy to miss in the spec
 
-These cut across sections, and are planned rather than built:
+These cut across sections of the spec:
 
 - The docs tree is a filtered `ConfigurableFileTree` over `workspaceDir`, never an `@InputDirectory`: the CLI writes its diagram cache to `.cache` inside the tree, which would make every task out of date (§4.2, §7).
 - For a `profile` entry, the plugin's `--output` replaces the profile's own `output`, so Gradle knows where the PDF goes; the bytes are unchanged (§6).
