@@ -1,7 +1,9 @@
 package io.github.bovinemagnet.adocfoundry;
 
+import io.github.bovinemagnet.adocfoundry.tool.AdocFoundryToolService;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.invocation.Gradle;
 import org.gradle.api.plugins.BasePlugin;
 
 /**
@@ -27,5 +29,11 @@ public abstract class AdocFoundryPlugin implements Plugin<Project> {
         extension.getBaseUrl().convention(DEFAULT_BASE_URL);
         extension.getWorkspaceDir().convention(project.getLayout().getProjectDirectory());
         extension.getWarnAboutUserSettings().convention(true);
+
+        Gradle gradle = project.getGradle();
+        gradle.getSharedServices().registerIfAbsent(AdocFoundryToolService.NAME, AdocFoundryToolService.class, spec -> {
+            spec.getParameters().getGradleUserHome().set(gradle.getGradleUserHomeDir());
+            spec.getParameters().getOffline().set(gradle.getStartParameter().isOffline());
+        });
     }
 }
