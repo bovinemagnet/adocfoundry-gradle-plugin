@@ -14,4 +14,17 @@ class ArgumentsTest {
         assertThat(CheckTask.arguments(WORKSPACE, "warning"))
                 .containsExactly("check", WORKSPACE.getPath(), "--format", "json", "--fail-on", "warning");
     }
+
+    @Test
+    void auditPassesOnlyWhatIsSet() {
+        File json = new File(WORKSPACE, "build/audit.json");
+
+        assertThat(AuditTask.arguments(WORKSPACE, "json", json, null, null, null))
+                .containsExactly("audit", WORKSPACE.getPath(), "--format", "json", "--output", json.getPath());
+        assertThat(AuditTask.arguments(WORKSPACE, "json", json, null, null, false))
+                .doesNotContain("--require-complete");
+        assertThat(AuditTask.arguments(WORKSPACE, "sarif", json, "2.0@manual", "warning", true))
+                .containsExactly("audit", WORKSPACE.getPath(), "--format", "sarif", "--output", json.getPath(),
+                        "--component", "2.0@manual", "--fail-on", "warning", "--require-complete");
+    }
 }

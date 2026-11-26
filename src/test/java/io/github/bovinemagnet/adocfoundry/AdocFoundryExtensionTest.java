@@ -27,5 +27,8 @@ class AdocFoundryExtensionTest {
         assertThat(extension.getWorkspaceDir().get().getAsFile()).isEqualTo(project.getProjectDir());
         assertThat(extension.getWarnAboutUserSettings().get()).isTrue();
         assertThat(extension.getCheck().getFailOn().get()).isEqualTo("error");
+        assertThat(extension.getAudit().getComponent().isPresent()).isFalse();
+        assertThat(extension.getAudit().getFailOn().isPresent()).isFalse();
+        assertThat(extension.getAudit().getRequireComplete().isPresent()).isFalse();
     }
 }

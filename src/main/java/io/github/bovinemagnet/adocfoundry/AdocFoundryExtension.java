@@ -70,4 +70,21 @@ public abstract class AdocFoundryExtension {
     public void check(Action<? super CheckSpec> action) {
         action.execute(getCheck());
     }
+
+    /**
+     * Settings for {@code adocfoundryAudit}.
+     *
+     * @return the audit settings
+     */
+    @Nested
+    public abstract AuditSpec getAudit();
+
+    /**
+     * Configures {@code adocfoundryAudit}.
+     *
+     * @param action the configuration
+     */
+    public void audit(Action<? super AuditSpec> action) {
+        action.execute(getAudit());
+    }
 }
